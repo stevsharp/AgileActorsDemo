@@ -21,6 +21,10 @@ namespace AgileActorsDemo.Queries
 
         protected string city = "London"; // Replace with the desired city name
 
+        protected string spotifyUrl = "https://api.spotify.com/v1/search?q=Muse&type=track%2Cartist&market=US&limit=10&offset=5";
+
+        protected string apiUrl => $"http://api.openweathermap.org/data/2.5/weather?q={city}&appid={apiKey}";
+
         public AggregatorHandler(
             IHttpRepository weatherApiHttpRepository, 
             IAppCache cache, 
@@ -35,15 +39,11 @@ namespace AgileActorsDemo.Queries
         {
             List<Task> tasks = new();
 
-            string apiUrl = $"http://api.openweathermap.org/data/2.5/weather?q={city}&appid={apiKey}";
-
             var getWeatherFunc = () => _httpRepository.GetAsync<WeatherApiDto>(apiUrl,cancellationToken);
 
             Task<WeatherApiDto> getWeatherTask = Task.Run(getWeatherFunc, cancellationToken);
 
             tasks.Add(getWeatherTask);
-
-            var spotifyUrl = "https://api.spotify.com/v1/search?q=Muse&type=track%2Cartist&market=US&limit=10&offset=5";
 
             Func<Task< SpotifyDto>> spotifyFunc = () => _spotifyApiHttpRepository.GetAsync<SpotifyDto>(spotifyUrl, cancellationToken);
 
