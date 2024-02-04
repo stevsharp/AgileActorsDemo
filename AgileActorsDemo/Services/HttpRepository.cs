@@ -2,17 +2,12 @@
 
 using Polly;
 using Polly.Retry;
+
+using System.Text;
 using System.Text.Json;
 
 namespace AgileActorsDemo.Services
 {
-    public interface IHttpRepository
-    {
-        Task<T?> GetAsync<T>(string endpoint, CancellationToken cancellationToken = default) where T : class;
-        Task<T?> GetAsync<T>(Uri endpoint, string token, CancellationToken cancellationToken = default) where T : class;
-        Task<T?> GetAsync<T>(string endpoint, string token, CancellationToken cancellationToken = default) where T : class;
-        Task<T?> GetAsyncWithJsonConvert<T>(Uri endpoint, string token, CancellationToken cancellationToken = default) where T : class;
-    }
 
     public class HttpRepository : IHttpRepository
     {
@@ -161,6 +156,24 @@ namespace AgileActorsDemo.Services
                 }
             }
             );
+        }
+
+        public async Task<T?> PostAsync<T>(object data, Uri endpoint, CancellationToken cancellationToken = default) where T : class
+        {
+            var client = _httpClientFactory.CreateClient();
+            client.Timeout = TimeSpan.FromMinutes(2);
+
+            return await _asyncRetryPolicy.ExecuteAsync(async () =>
+            {
+                var response = await client.PostAsync(endpoint, new JsonContent(data), cancellationToken);
+
+                var content = await response.Content.ReadAsStringAsync(cancellationToken);
+
+                var dto = System.Text.Json.JsonSerializer.Deserialize<T>(content, _options);
+
+                return dto;
+
+            });
         }
 
     }

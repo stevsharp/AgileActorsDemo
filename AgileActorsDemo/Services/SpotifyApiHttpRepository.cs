@@ -1,26 +1,49 @@
-﻿using AgileActorsDemo.Models;
-using AgileActorsDemo.Spotify;
+﻿using AgileActorsDemo.Spotify;
 
-using Polly;
-using Polly.Retry;
+using Newtonsoft.Json;
+using System.Net.Http.Headers;
+using System.Text;
 
 namespace AgileActorsDemo.Services
 {
-
-    public class WeatherApiHttpRepository : HttpRepository, IWeatherApiHttpRepository
+    public class SpotifyApiHttpRepository : HttpRepository, ISpotifyApiHttpRepository
     {
-        protected string apiKey = "d3d9fd2b66ba1fbb58696115bd6a424f";
-
-        protected string city = "London"; // Replace with the desired city name
-
-        protected readonly ILogger<WeatherApiHttpRepository> _logger;
-
-        public WeatherApiHttpRepository(IHttpClientFactory httpClientFactory, ILogger<WeatherApiHttpRepository> logger)
-            :base(httpClientFactory,logger)
+        public SpotifyApiHttpRepository(IHttpClientFactory httpClientFactory, ILogger<SpotifyApiHttpRepository> logger)
+            : base(httpClientFactory, logger)
         {
 
         }
 
+        public async Task<SpotifyAccessToken> GetAccessToken()
+        {
+            string clientId = "5c21c84f5fe542b99286ef2a7eee9db0";
+            string clientSecret = "aea7bc1b406b46e5832753be0f8d371c";
+            string credentials = String.Format("{0}:{1}", clientId, clientSecret);
+
+            using var client = this.CreateHttpClient();
+
+            client.DefaultRequestHeaders.Accept.Clear();
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(Encoding.UTF8.GetBytes(credentials)));
+
+            List<KeyValuePair<string, string>> requestData = new()
+            {
+                new KeyValuePair<string, string>("grant_type", "client_credentials")
+            };
+
+            FormUrlEncodedContent requestBody = new(requestData);
+
+            var request = await client.PostAsync("https://accounts.spotify.com/api/token", requestBody).ConfigureAwait(false);
+
+            var response = await request.Content.ReadAsStringAsync();
+
+            var token = JsonConvert.DeserializeObject<SpotifyAccessToken>(response);
+
+            return token;
+        }
+
+        
     }
 }
 

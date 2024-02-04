@@ -11,6 +11,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddHttpClient();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IHttpRepository, HttpRepository>();
+builder.Services.AddScoped<ISpotifyApiHttpRepository, SpotifyApiHttpRepository>();
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
 builder.Services.AddHealthChecks();
 builder.Services.AddLazyCache();

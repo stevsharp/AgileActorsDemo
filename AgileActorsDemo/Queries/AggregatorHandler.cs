@@ -15,15 +15,21 @@ namespace AgileActorsDemo.Queries
 
         protected readonly IAppCache _cache;
 
+        protected readonly ISpotifyApiHttpRepository _spotifyApiHttpRepository;
+
         protected string apiKey = "d3d9fd2b66ba1fbb58696115bd6a424f";
 
         protected string city = "London"; // Replace with the desired city name
 
-        public AggregatorHandler(IHttpRepository weatherApiHttpRepository, IAppCache cache)
+        public AggregatorHandler(
+            IHttpRepository weatherApiHttpRepository, 
+            IAppCache cache, 
+            ISpotifyApiHttpRepository spotifyApiHttpRepository)
         {
             _httpRepository = weatherApiHttpRepository;
 
             _cache = cache;
+            _spotifyApiHttpRepository = spotifyApiHttpRepository;
         }
         public async Task<AggregatorDto> Handle(AggregatorQuery request, CancellationToken cancellationToken)
         {
