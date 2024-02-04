@@ -3,6 +3,7 @@
 using Polly;
 using Polly.Retry;
 
+using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 
@@ -69,11 +70,12 @@ namespace AgileActorsDemo.Services
             if (string.IsNullOrWhiteSpace(endpoint))
                 throw new ArgumentException($"'{nameof(endpoint)}' cannot be null or empty.", nameof(endpoint));
 
-            var client = this.CreateHttpClient();
-
             return await _asyncRetryPolicy.ExecuteAsync(async () =>
             {
-                using var response = await CreateHttpClient().GetAsync(endpoint,
+                var client = this.CreateHttpClient();
+                client.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
+
+                using var response = await client.GetAsync(endpoint,
                         HttpCompletionOption.ResponseHeadersRead,
                         cancellationToken)
                     .ConfigureAwait(false);

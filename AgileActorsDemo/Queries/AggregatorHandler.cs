@@ -43,11 +43,21 @@ namespace AgileActorsDemo.Queries
 
             tasks.Add(getWeatherTask);
 
+            var spotifyUrl = "https://api.spotify.com/v1/search?q=Muse&type=track%2Cartist&market=US&limit=10&offset=5";
+
+            Func<Task< SpotifyDto>> spotifyFunc = () => _spotifyApiHttpRepository.GetAsync<SpotifyDto>(spotifyUrl, cancellationToken);
+
+            Task<SpotifyDto> spotifyTask = Task.Run(spotifyFunc, cancellationToken);
+
+            tasks.Add(spotifyTask);
+
             var weatherData = await _cache.GetOrAddAsync(ApplicationConstants.Cache.GetWeatherCacheKey, getWeatherFunc, DateTimeOffset.Now.AddMinutes(30));
+
+            var spotifyData = await _cache.GetOrAddAsync(ApplicationConstants.Cache.GetSpotifyCacheKey, spotifyFunc, DateTimeOffset.Now.AddMinutes(30));
 
             await Task.WhenAll(tasks);
 
-            return new AggregatorDto(weatherData ?? new WeatherApiDto());
+            return new AggregatorDto(weatherData ?? new WeatherApiDto(), spotifyData ?? new SpotifyDto());
         }
     }
 }

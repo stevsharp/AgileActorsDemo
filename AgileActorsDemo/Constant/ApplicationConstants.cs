@@ -5,6 +5,9 @@
         public static class Cache
         {
             public const string GetWeatherCacheKey = "WeatherCache";
+
+
+            public const string GetSpotifyCacheKey = "SpotifyCache";
         }
     }
 }
