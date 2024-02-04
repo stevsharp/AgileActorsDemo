@@ -48,9 +48,8 @@ namespace AgileActorsDemo.Services
 
             return await _asyncRetryPolicy.ExecuteAsync(async () =>
             {
-                using var response = await CreateHttpClient().GetAsync(endpoint,
-                        HttpCompletionOption.ResponseHeadersRead, cancellationToken)
-                    .ConfigureAwait(false);
+                using var response = await CreateHttpClient().GetAsync(endpoint,HttpCompletionOption.ResponseHeadersRead, cancellationToken)
+                                                            .ConfigureAwait(false);
 
                 var statusCode = response.StatusCode;
 

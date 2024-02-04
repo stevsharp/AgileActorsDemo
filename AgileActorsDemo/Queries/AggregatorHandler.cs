@@ -23,7 +23,9 @@ namespace AgileActorsDemo.Queries
 
         protected string spotifyUrl = "https://api.spotify.com/v1/search?q=Muse&type=track%2Cartist&market=US&limit=10&offset=5";
 
-        protected string apiUrl => $"http://api.openweathermap.org/data/2.5/weather?q={city}&appid={apiKey}";
+        protected string openWeatherApiUrl => $"http://api.openweathermap.org/data/2.5/weather?q={city}&appid={apiKey}";
+
+        protected string newsApiUrl = "https://newsapi.org/v2/everything?q=Apple&from=2024-02-01&sortBy=popularity&apiKey=cf7c95c35275406798fc8a2c48431f68";
 
         public AggregatorHandler(
             IHttpRepository weatherApiHttpRepository, 
@@ -39,7 +41,7 @@ namespace AgileActorsDemo.Queries
         {
             List<Task> tasks = new();
 
-            var getWeatherFunc = () => _httpRepository.GetAsync<WeatherApiDto>(apiUrl,cancellationToken);
+            var getWeatherFunc = () => _httpRepository.GetAsync<WeatherApiDto>(openWeatherApiUrl,cancellationToken);
 
             Task<WeatherApiDto> getWeatherTask = Task.Run(getWeatherFunc, cancellationToken);
 
@@ -51,13 +53,19 @@ namespace AgileActorsDemo.Queries
 
             tasks.Add(spotifyTask);
 
+            var getNewFunc = () => _httpRepository.GetAsync<NewsApiDto>(newsApiUrl, cancellationToken);
+
+            Task<NewsApiDto> newsApiTask = Task.Run(getNewFunc, cancellationToken);
+
             var weatherData = await _cache.GetOrAddAsync(ApplicationConstants.Cache.GetWeatherCacheKey, getWeatherFunc, DateTimeOffset.Now.AddMinutes(30));
 
             var spotifyData = await _cache.GetOrAddAsync(ApplicationConstants.Cache.GetSpotifyCacheKey, spotifyFunc, DateTimeOffset.Now.AddMinutes(30));
 
+            var newsData = await _cache.GetOrAddAsync(ApplicationConstants.Cache.GetNewsCacheKey, getNewFunc, DateTimeOffset.Now.AddMinutes(30));
+
             await Task.WhenAll(tasks);
 
-            return new AggregatorDto(weatherData ?? new WeatherApiDto(), spotifyData ?? new SpotifyDto());
+            return new AggregatorDto(weatherData ?? new WeatherApiDto(), spotifyData ?? new SpotifyDto() , newsData ?? new NewsApiDto());
         }
     }
 }

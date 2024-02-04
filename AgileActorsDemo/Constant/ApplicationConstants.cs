@@ -6,8 +6,9 @@
         {
             public const string GetWeatherCacheKey = "WeatherCache";
 
-
             public const string GetSpotifyCacheKey = "SpotifyCache";
+
+            public const string GetNewsCacheKey = "NewsCache";
         }
     }
 }
