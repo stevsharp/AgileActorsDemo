@@ -5,8 +5,6 @@ using AgileActorsDemo.Services;
 using LazyCache;
 
 using MediatR;
-
-using System.Linq;
 using System.Linq.Expressions;
 
 namespace AgileActorsDemo.Queries
