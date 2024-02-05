@@ -22,9 +22,9 @@ namespace AgileActorTestProject
         }
 
         [Fact]
-        public async Task GetAsync_ShouldReturnData()
+        public async Task GetAsync_SuccessfulRequest_ReturnsDeserializedObject()
         {
-          
+            // Arrange
             var httpClientFactoryMock = new Mock<IHttpClientFactory>();
             var loggerMock = new Mock<ILogger<HttpRepository>>();
 
@@ -49,11 +49,36 @@ namespace AgileActorTestProject
             httpClientFactoryMock.Setup(factory => factory.CreateClient(It.IsAny<string>())).Returns(httpClient);
 
             // Act
-            var result = await httpRepository.GetAsync<NewsApiDto>(ApplicationConstants.Cache.GetNewsCacheKey);
+            var result = await httpRepository.GetAsync<NewsApiDto>("https://example.com/api/data", CancellationToken.None);
 
             // Assert
             Assert.NotNull(result);
 
+        }
+
+
+        [Fact]
+        public async Task GetAsync_RetryPolicyExhausted_ThrowsHttpRequestException()
+        {
+            // Arrange
+            var httpClientFactoryMock = new Mock<IHttpClientFactory>();
+            var loggerMock = new Mock<ILogger<HttpRepository>>();
+
+            var handlerMock = new Mock<HttpMessageHandler>();
+            var httpClient = new HttpClient(handlerMock.Object);
+
+            var httpRepository = new HttpRepository(httpClientFactoryMock.Object, loggerMock.Object);
+
+            var expectedException = new HttpRequestException("Simulated request failure");
+
+            handlerMock.Protected()
+                .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
+                .ThrowsAsync(expectedException);
+
+            httpClientFactoryMock.Setup(factory => factory.CreateClient(It.IsAny<string>())).Returns(httpClient);
+
+            // Act & Assert
+            await Assert.ThrowsAsync<HttpRequestException>(() => httpRepository.GetAsync<NewsApiDto>("https://example.com/api/data", CancellationToken.None));
         }
 
     }
