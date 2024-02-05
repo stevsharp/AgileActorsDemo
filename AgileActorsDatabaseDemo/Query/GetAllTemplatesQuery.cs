@@ -2,7 +2,7 @@
 
 namespace AgileActorsDatabaseDemo.Query
 {
-    public class GetAllTemplatesQuery : IRequest<TemplateResponse>
+    public class GetAllTemplatesQuery : IRequest<List<TemplateResponse>>
     {
         public int PageNumber { get; }
         public int PageSize { get;  }

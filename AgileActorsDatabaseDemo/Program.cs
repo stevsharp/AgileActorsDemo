@@ -1,4 +1,5 @@
 using AgileActorsDatabaseDemo;
+using AgileActorsDatabaseDemo.IRepository;
 
 using Microsoft.EntityFrameworkCore;
 
@@ -11,7 +12,7 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
 
 builder.Services.AddDbContext<BaseDbContext>(options => {
     var config = builder.Configuration;
@@ -19,6 +20,8 @@ builder.Services.AddDbContext<BaseDbContext>(options => {
 
     options.UseSqlServer(connectionString);
 });
+
+builder.Services.AddScoped<ITemplateRepository, TemplateRepository>();
 
 var app = builder.Build();
 

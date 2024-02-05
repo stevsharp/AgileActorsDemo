@@ -1,4 +1,7 @@
-﻿using System.Linq.Expressions;
+﻿using Microsoft.EntityFrameworkCore;
+
+using System.Linq.Expressions;
+using System.Security.Principal;
 
 namespace AgileActorsDatabaseDemo.Specification
 {
