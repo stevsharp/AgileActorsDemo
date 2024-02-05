@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AgileActorsDemo", "AgileAct
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AgileActorTestProject", "AgileActorTestProject\AgileActorTestProject.csproj", "{19846F50-39DF-4BB2-B60E-F8ACFA14C3FA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AgileActorsDatabaseDemo", "AgileActorsDatabaseDemo\AgileActorsDatabaseDemo.csproj", "{BD4B9C0C-C402-41FF-AF28-8348DAC32747}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{19846F50-39DF-4BB2-B60E-F8ACFA14C3FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{19846F50-39DF-4BB2-B60E-F8ACFA14C3FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{19846F50-39DF-4BB2-B60E-F8ACFA14C3FA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BD4B9C0C-C402-41FF-AF28-8348DAC32747}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BD4B9C0C-C402-41FF-AF28-8348DAC32747}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BD4B9C0C-C402-41FF-AF28-8348DAC32747}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BD4B9C0C-C402-41FF-AF28-8348DAC32747}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
