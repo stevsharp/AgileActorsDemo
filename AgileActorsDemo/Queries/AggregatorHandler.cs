@@ -6,9 +6,12 @@ using LazyCache;
 
 using MediatR;
 
+using System.Linq;
+using System.Linq.Expressions;
+
 namespace AgileActorsDemo.Queries
 {
-    internal class AggregatorHandler : IRequestHandler<AggregatorQuery, AggregatorDto>
+    public class AggregatorHandler : IRequestHandler<AggregatorQuery, AggregatorDto>
     {
 
         protected readonly IHttpRepository _httpRepository;
@@ -22,7 +25,6 @@ namespace AgileActorsDemo.Queries
         protected string city = "London"; // Replace with the desired city name
 
         protected string spotifyUrl = "https://api.spotify.com/v1/search?q=Muse&type=track%2Cartist&market=US&limit=10&offset=5";
-
         protected string openWeatherApiUrl => $"http://api.openweathermap.org/data/2.5/weather?q={city}&appid={apiKey}";
 
         protected string newsApiUrl = "https://newsapi.org/v2/everything?q=Apple&from=2024-02-01&sortBy=popularity&apiKey=cf7c95c35275406798fc8a2c48431f68";
@@ -65,7 +67,43 @@ namespace AgileActorsDemo.Queries
 
             await Task.WhenAll(tasks);
 
+            if (request.DataSource.ToLower().Equals(ApplicationConstants.DataSource.News))
+            {
+                return new AggregatorDto(null, null, newsData ?? new NewsApiDto());
+            }
+            if (request.DataSource.ToLower().Equals(ApplicationConstants.DataSource.Spotify))
+            {
+                return new AggregatorDto(null, spotifyData ?? new SpotifyDto(), null);
+            }
+            if (request.DataSource.ToLower().Equals(ApplicationConstants.DataSource.Weather))
+            {
+                return new AggregatorDto(weatherData ?? new WeatherApiDto(), null, null);
+            }
+
+
             return new AggregatorDto(weatherData ?? new WeatherApiDto(), spotifyData ?? new SpotifyDto() , newsData ?? new NewsApiDto());
         }
+        /// <summary>
+        /// Simulate how we can filter or order by data
+        /// </summary>
+        /// <typeparam name="TOrderBy"></typeparam>
+        /// <param name="filter"></param>
+        /// <param name="orderBy"></param>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        private static List<Artist> GetArtists<TOrderBy>(
+            Expression<Func<Artist, bool>> filter,
+            Expression<Func<Artist, TOrderBy>> orderBy,
+            List<Artist> source)
+        {
+
+            var products = source
+                .AsQueryable()
+                .Where(filter)
+                .OrderBy(orderBy);
+
+            return products.ToList();
+        }
     }
+
 }

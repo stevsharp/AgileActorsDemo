@@ -1,13 +1,15 @@
 ﻿using AgileActorsDemo.Models;
 
 using MediatR;
+
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AgileActorsDemo.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize]
+    [Authorize]
     public class AggregatorController : ControllerBase
     {
 
