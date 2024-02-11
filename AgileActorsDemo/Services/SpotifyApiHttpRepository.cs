@@ -13,8 +13,8 @@ namespace AgileActorsDemo.Services
     public class SpotifyApiHttpRepository : HttpRepository, ISpotifyApiHttpRepository
     {
 
-        protected string clientId = "5c21c84f5fe542b99286ef2a7eee9db0";
-        protected string clientSecret = "aea7bc1b406b46e5832753be0f8d371c";
+        protected string clientId = "";
+        protected string clientSecret = "";
 
         protected readonly IAppCache _cache;
         public SpotifyApiHttpRepository(
