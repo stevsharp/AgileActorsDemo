@@ -20,7 +20,7 @@ namespace AgileActorsDemo.Queries
 
         protected readonly ISpotifyApiHttpRepository _spotifyApiHttpRepository;
 
-        protected string apiKey = "d3d9fd2b66ba1fbb58696115bd6a424f";
+        protected string apiKey = "";
 
         protected string city = "London"; // Replace with the desired city name
 
