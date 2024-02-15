@@ -1,6 +1,6 @@
 ﻿namespace AgileActorsDemo.Models
 {
-    public class Album
+    public record Album
     {
         public string album_type { get; set; }
         public List<Artist> artists { get; set; }
@@ -17,7 +17,7 @@
         public string uri { get; set; }
     }
 
-    public class Artist
+    public record Artist
     {
         public ExternalUrls external_urls { get; set; }
         public string href { get; set; }
@@ -33,30 +33,30 @@
         public int total { get; set; }
     }
 
-    public class ExternalIds
+    public record ExternalIds
     {
         public string isrc { get; set; }
     }
 
-    public class ExternalUrls
+    public record ExternalUrls
     {
         public string spotify { get; set; }
     }
 
-    public class Followers
+    public record Followers
     {
         public object href { get; set; }
         public int total { get; set; }
     }
 
-    public class Image
+    public record Image
     {
         public int height { get; set; }
         public string url { get; set; }
         public int width { get; set; }
     }
 
-    public class Item
+    public record Item
     {
         public ExternalUrls external_urls { get; set; }
         public Followers followers { get; set; }
@@ -80,13 +80,13 @@
         public int track_number { get; set; }
     }
 
-    public class SpotifyDto
+    public record SpotifyDto : BaseDto
     {
         public Artist artists { get; set; }
         public Tracks tracks { get; set; }
     }
 
-    public class Tracks
+    public record Tracks
     {
         public string href { get; set; }
         public List<Item> items { get; set; }

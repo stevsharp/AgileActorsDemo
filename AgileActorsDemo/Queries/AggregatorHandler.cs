@@ -5,6 +5,8 @@ using AgileActorsDemo.Services;
 using LazyCache;
 
 using MediatR;
+
+using System.Dynamic;
 using System.Linq.Expressions;
 
 namespace AgileActorsDemo.Queries
@@ -43,27 +45,29 @@ namespace AgileActorsDemo.Queries
 
             var getWeatherFunc = () => _httpRepository.GetAsync<WeatherApiDto>(openWeatherApiUrl,cancellationToken);
 
-            Task<WeatherApiDto> getWeatherTask = Task.Run(getWeatherFunc, cancellationToken);
-
-            tasks.Add(getWeatherTask);
-
-            Func<Task< SpotifyDto>> spotifyFunc = () => _spotifyApiHttpRepository.GetAsync<SpotifyDto>(spotifyUrl, cancellationToken);
-
-            Task<SpotifyDto> spotifyTask = Task.Run(spotifyFunc, cancellationToken);
-
-            tasks.Add(spotifyTask);
+            var spotifyFunc = () => _spotifyApiHttpRepository.GetAsync<SpotifyDto>(spotifyUrl, cancellationToken);
 
             var getNewFunc = () => _httpRepository.GetAsync<NewsApiDto>(newsApiUrl, cancellationToken);
 
-            Task<NewsApiDto> newsApiTask = Task.Run(getNewFunc, cancellationToken);
+            var weatherTask = _cache.GetOrAddAsync(ApplicationConstants.Cache.GetWeatherCacheKey, getWeatherFunc, DateTimeOffset.Now.AddMinutes(30));
 
-            var weatherData = await _cache.GetOrAddAsync(ApplicationConstants.Cache.GetWeatherCacheKey, getWeatherFunc, DateTimeOffset.Now.AddMinutes(30));
+            var spotifyTask = _cache.GetOrAddAsync(ApplicationConstants.Cache.GetSpotifyCacheKey, spotifyFunc, DateTimeOffset.Now.AddMinutes(30));
 
-            var spotifyData = await _cache.GetOrAddAsync(ApplicationConstants.Cache.GetSpotifyCacheKey, spotifyFunc, DateTimeOffset.Now.AddMinutes(30));
+            var newsTask = _cache.GetOrAddAsync(ApplicationConstants.Cache.GetNewsCacheKey, getNewFunc, DateTimeOffset.Now.AddMinutes(30));
 
-            var newsData = await _cache.GetOrAddAsync(ApplicationConstants.Cache.GetNewsCacheKey, getNewFunc, DateTimeOffset.Now.AddMinutes(30));
+            tasks.Add(weatherTask);
 
-            await Task.WhenAll(tasks);
+            tasks.Add(spotifyTask);
+
+            tasks.Add(newsTask);
+
+            await Task.WhenAll(tasks).ConfigureAwait(false);
+
+            var newsData = newsTask.Result;
+
+            var spotifyData = spotifyTask.Result;
+
+            var weatherData = weatherTask.Result;
 
             if (request.DataSource.ToLower().Equals(ApplicationConstants.DataSource.News))
             {
@@ -78,8 +82,7 @@ namespace AgileActorsDemo.Queries
                 return new AggregatorDto(weatherData ?? new WeatherApiDto(), null, null);
             }
 
-
-            return new AggregatorDto(weatherData ?? new WeatherApiDto(), spotifyData ?? new SpotifyDto() , newsData ?? new NewsApiDto());
+            return new AggregatorDto(weatherData ?? new WeatherApiDto(), spotifyData ?? new SpotifyDto(), newsData ?? new NewsApiDto());
         }
         /// <summary>
         /// Simulate how we can filter or order by data
